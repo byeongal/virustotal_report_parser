@@ -1,8 +1,5 @@
 import simplejson, os
 
-
-antivirus_list = [ 'BitDefender', 'F-Secure', 'Kaspersky', 'Symantec', 'TrendMicro']
-
 class Parser :
     def __init__(self, path) :
         self.path = path
@@ -43,6 +40,24 @@ class Parser :
             return self.json_obj['scan_date']
         except :
             return 'no-result'
+    def positive_engine_list(self) :
+        try :
+            ret_list = []
+            for engine, result in self.json_obj['scans'].items() :
+                if result['detected'] :
+                    ret_list.append(engine)
+            return ret_list
+        except :
+            return []
+    def negative_engine_list(self) :
+        try :
+            ret_list = []
+            for engine, result in self.json_obj['scans'].items() :
+                if not result['detected'] :
+                    ret_list.append(engine)
+            return ret_list
+        except :
+            return []
 
 if __name__ == '__main__' :
     json_paths = []
@@ -61,4 +76,6 @@ if __name__ == '__main__' :
         print("TOTAL : {total}".format(total=parser.total()))
         print("POSITIVES : {positives}".format(positives = parser.positives()))
         print("AhnLab-V3 : {result}".format(result = parser.result('AhnLab-V3')))
+        print("POSITIVE ENGINE LIST : {positive_engine_list}".format(positive_engine_list = parser.positive_engine_list()))
+        print("NEGATIVE ENGINE LIST : {negative_engine_list}".format(negative_engine_list = parser.negative_engine_list()))
         print("-------------------------------------------------------------------------")
